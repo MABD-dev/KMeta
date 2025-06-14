@@ -136,7 +136,13 @@ class LoggableProcessor(
         func: KSFunctionDeclaration
     ) = this.apply {
         val params = func.parameters.map { param ->
-            ParameterSpec(param.name?.asString() ?: "_", param.type.toTypeName())
+            val modifiers =  if (param.isVararg) arrayOf(KModifier.VARARG) else arrayOf()
+
+            ParameterSpec(
+                name = param.name?.asString() ?: "_",
+                type = param.type.toTypeName(),
+                modifiers = modifiers
+            )
         }
         addParameters(params)
     }
@@ -155,11 +161,15 @@ class LoggableProcessor(
         val functionName = func.simpleName.asString()
         val hasReturn = func.returnType?.toString() != "Unit"
 
-        val params2 = func.parameters.map { param ->
-            param.name?.getShortName() to param.type
+        val paramsNames = func.parameters.joinToString(", ") { param ->
+            val varargStr = if (param.isVararg) "*" else ""
+            "${varargStr}${param.name?.getShortName()}"
         }
-        val paramsNames = params2.joinToString(", ") { "${it.first}" }
-        val paramsPrint = params2.joinToString(", ") { "${it.first}=\$${it.first}" }
+        val paramsPrint = func.parameters.joinToString(", ") { param ->
+            val name = param.name?.getShortName()
+            val varargStr = if (param.isVararg) ".toList()" else ""
+            "${name}=\${${name}${varargStr}}"
+        }
 
         val typedVariableNames = func.typeParameters.joinToString(", ") { it.name.asString() }
             .let { if (it.isBlank()) "" else "<$it>" }

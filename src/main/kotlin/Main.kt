@@ -1,5 +1,8 @@
 package org.mabd
 
+import org.mabd.loggable.Loggable
+import org.mabd.loggable.NoLog
+
 
 /**
  * Testing docs on class
@@ -24,21 +27,17 @@ interface ApiService<T> {
     fun test3(b: Int): Int
 
     fun <T: Number, R> test4()
+
+    fun test5(a: Int, vararg f: Float)
 }
 
 class RealApiService: ApiService<String> {
-    override fun test() {
-    }
 
-    override fun test2(a: Int) {
-    }
-
-    override fun test3(b: Int): Int {
-        return 1
-    }
-
-    override fun <T: Number, R> test4() {
-    }
+    override fun test() {}
+    override fun test2(a: Int) {}
+    override fun test3(b: Int): Int { return 1 }
+    override fun <T: Number, R> test4() {}
+    override fun test5(a: Int, vararg f: Float) {}
 
 }
 
@@ -51,4 +50,5 @@ fun main() {
     apiService.test2(1)
     apiService.test3(3)
     apiService.test4<Int, Int>()
+    apiService.test5(1, .1f, .2f)
 }

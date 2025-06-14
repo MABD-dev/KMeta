@@ -88,9 +88,9 @@ The generated class logs function calls, input parameters, and return values.
 - [X] Copy docs from original code
 - [X] Add annotation to function to skip logging
 - [X] Handle generics
-- [ ] Support for function default params
-- [ ] Support varargs
+- [X] Support varargs
 - [ ] Support properties
+- [ ] Support for function default params
 
 
 ---
