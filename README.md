@@ -52,6 +52,15 @@ The generated class logs function calls, input parameters, and return values.
     val loggedApi = MyApiLoggerImpl(realApi)
     ```
 
+### Upcoming Features:
+- [ ] Handle suspend functions
+- [ ] Match functions modifier
+- [ ] Support for function default params
+- [ ] Match visibility modifiers
+- [ ] Handle generics
+- [ ] Copy docs from original code
+
+
 ---
 
 
