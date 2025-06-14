@@ -1,9 +1,5 @@
 package org.mabd
 
-
-@MyAnnotation
-class DemoClass
-
 fun main() {
     println("Hello World!")
 }
