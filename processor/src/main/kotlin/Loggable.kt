@@ -78,17 +78,25 @@ class LoggableProcessor(
     ): FunSpec = FunSpec
         .builder(this.simpleName.asString())
         .addModifiers(KModifier.OVERRIDE)
+        .addModifiers(this)
         .addKdocIfFound(this)
         .addParams(this)
         .addFunctionBody(this, delegateName, fileName)
         .addReturnType(this)
         .build()
 
+    private fun FunSpec.Builder.addModifiers(
+        func: KSFunctionDeclaration
+    ) = this.apply {
+        addModifiers(*func.modifiers.mapNotNull { it.toKModifier() }.toTypedArray())
+    }
+
     private fun FunSpec.Builder.addKdocIfFound(
         func: KSFunctionDeclaration
     ) = this.apply {
         func.docString?.let { this.addKdoc(it) }
     }
+
     private fun FunSpec.Builder.addParams(
         func: KSFunctionDeclaration
     ) = this.apply {
