@@ -28,6 +28,7 @@ The generated class logs function calls, input parameters, and return values.
 - Preserves all function modifiers (`suspend`, `operator`, etc.), annotations, and KDoc.
 - Supports per-function logging opt-out via the `@NoLog` annotation.
 - Retains KDoc from both interfaces and functions in the generated code.
+- Interface and function generics are supported
 
 
 #### **How it works:**
@@ -86,8 +87,8 @@ The generated class logs function calls, input parameters, and return values.
 - [X] Copy modifiers to generated functions
 - [X] Copy docs from original code
 - [X] Add annotation to function to skip logging
+- [X] Handle generics
 - [ ] Support for function default params
-- [ ] Handle generics
 - [ ] Support varargs
 - [ ] Support properties
 

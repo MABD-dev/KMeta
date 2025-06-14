@@ -5,7 +5,7 @@ package org.mabd
  * Testing docs on class
  */
 @Loggable
-interface ApiService {
+interface ApiService<T> {
 
     @Deprecated(
         message = "just for testing",
@@ -22,9 +22,11 @@ interface ApiService {
      * @return some number
      */
     fun test3(b: Int): Int
+
+    fun <T: Number, R> test4()
 }
 
-class RealApiService: ApiService {
+class RealApiService: ApiService<String> {
     override fun test() {
     }
 
@@ -33,6 +35,9 @@ class RealApiService: ApiService {
 
     override fun test3(b: Int): Int {
         return 1
+    }
+
+    override fun <T: Number, R> test4() {
     }
 
 }
@@ -45,4 +50,5 @@ fun main() {
     apiService.test()
     apiService.test2(1)
     apiService.test3(3)
+    apiService.test4<Int, Int>()
 }

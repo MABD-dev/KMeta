@@ -4,6 +4,7 @@ import com.google.devtools.ksp.getDeclaredFunctions
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
 import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.ksp.toAnnotationSpec
 import com.squareup.kotlinpoet.ksp.toKModifier
 import com.squareup.kotlinpoet.ksp.toTypeName
@@ -47,9 +48,11 @@ class LoggableProcessor(
         val interfaceName = this.simpleName.asString()
         val fileName = "${interfaceName}LoggerImpl"
 
+        val typeParameters = this.typeParameters.map { it.toTypeVariable() }
 
         val loggerClassName = ClassName(packageName, fileName)
         val interfaceClassName = ClassName(packageName, interfaceName)
+            .parameterizedBy(typeParameters)
 
         val delegateName = "delegate"
 
@@ -66,6 +69,7 @@ class LoggableProcessor(
             .primaryConstructor(constructor)
             .addProperty(delegateProp)
             .addSuperinterface(interfaceClassName)
+            .addTypeVariables(this.typeParameters.map { it.toTypeVariable() })
 
         this.docString?.let { loggerClass.addKdoc(it) }
 
@@ -89,6 +93,7 @@ class LoggableProcessor(
         .addAnnotations(this)
         .addModifiers(KModifier.OVERRIDE)
         .addModifiers(this)
+        .addTypeVariableIfFound(this)
         .addKdocIfFound(this)
         .addParams(this)
         .addFunctionBody(this, delegateName, fileName)
@@ -99,6 +104,20 @@ class LoggableProcessor(
         func: KSFunctionDeclaration
     ) = this.apply {
         addModifiers(func.modifiers.mapNotNull { it.toKModifier() })
+    }
+
+    private fun FunSpec.Builder.addTypeVariableIfFound(
+        func: KSFunctionDeclaration
+    ) = this.apply {
+        val typeVariables = func.typeParameters.map { it.toTypeVariable() }
+        this.addTypeVariables(typeVariables)
+    }
+
+    private fun KSTypeParameter.toTypeVariable(): TypeVariableName {
+        val name = this.name.asString()
+        val bounds = this.bounds.map { it.toTypeName() }.toList()
+        return if (bounds.isEmpty()) TypeVariableName(name)
+        else TypeVariableName(name, bounds)
     }
 
     private fun FunSpec.Builder.addAnnotations(
@@ -142,7 +161,10 @@ class LoggableProcessor(
         val paramsNames = params2.joinToString(", ") { "${it.first}" }
         val paramsPrint = params2.joinToString(", ") { "${it.first}=\$${it.first}" }
 
-        this.addStatement("val result = ${delegateName}.${functionName}(${paramsNames})")
+        val typedVariableNames = func.typeParameters.joinToString(", ") { it.name.asString() }
+            .let { if (it.isBlank()) "" else "<$it>" }
+
+        this.addStatement("val result = ${delegateName}.${functionName}${typedVariableNames}(${paramsNames})")
 
         var returnStr = ""
         if (hasReturn) {
