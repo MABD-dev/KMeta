@@ -6,7 +6,6 @@ import com.google.devtools.ksp.symbol.*
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
-import java.io.OutputStreamWriter
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.SOURCE)
@@ -49,6 +48,7 @@ class LoggableProcessor(
             .initializer(delegateName)
             .addModifiers(KModifier.PRIVATE)
             .build()
+
         val constructor = FunSpec.constructorBuilder()
             .addParameter(delegateName, interfaceClassName)
             .build()
@@ -58,52 +58,69 @@ class LoggableProcessor(
             .addProperty(delegateProp)
             .addSuperinterface(interfaceClassName)
 
-        val functions = this.getDeclaredFunctions().map { func ->
-            val functionName = func.simpleName.asString()
+        val functions = this
+            .getDeclaredFunctions()
+            .map { it.createFunctionSpecs(delegateName, fileName) }
+            .toList()
 
-            val funcBuilder = FunSpec
-                .builder(functionName)
-                .addModifiers(KModifier.OVERRIDE)
-
-            // set function parameters
-            val params = func.parameters.map { param ->
-                ParameterSpec(param.name?.asString() ?: "_", param.type.toTypeName())
-            }
-            funcBuilder.addParameters(params)
-
-            // set function return type
-
-            func.returnType?.toTypeName()?.let { funcBuilder.returns(it) }
-
-            // set function body
-            val hasReturn = func.returnType?.toString() != "Unit"
-
-            val params2 = func.parameters.map { param ->
-                param.name?.getShortName() to param.type
-            }
-            val paramsNames = params2.joinToString(", ") { "${it.first}" }
-            val paramsPrint = params2.joinToString(", ") { "${it.first}=\$${it.first}" }
-
-            funcBuilder.addStatement("val result = ${delegateName}.${functionName}(${paramsNames})")
-
-            var returnStr = ""
-            if (hasReturn) {
-                returnStr = "->\$result"
-            }
-
-            funcBuilder.addStatement("""println("${fileName}: ${functionName}(${paramsPrint})${returnStr}")""")
-            if (hasReturn) {
-                funcBuilder.addStatement("return result")
-            }
-
-            funcBuilder.build()
-        }
-
-        loggerClass.addFunctions(functions.toList())
+        loggerClass.addFunctions(functions)
 
         return FileSpec.builder(loggerClassName)
             .addType(loggerClass.build())
             .build()
+    }
+
+    private fun KSFunctionDeclaration.createFunctionSpecs(
+        delegateName: String,
+        fileName: String
+    ): FunSpec = FunSpec
+        .builder(this.simpleName.asString())
+        .addModifiers(KModifier.OVERRIDE)
+        .addParams(this)
+        .addFunctionBody(this, delegateName, fileName)
+        .addReturnType(this)
+        .build()
+
+    private fun FunSpec.Builder.addParams(
+        func: KSFunctionDeclaration
+    ) = this.apply {
+        val params = func.parameters.map { param ->
+            ParameterSpec(param.name?.asString() ?: "_", param.type.toTypeName())
+        }
+        addParameters(params)
+    }
+
+    private fun FunSpec.Builder.addReturnType(
+        func: KSFunctionDeclaration
+    ) = this.apply {
+        func.returnType?.toTypeName()?.let { this.returns(it) }
+    }
+
+    private fun FunSpec.Builder.addFunctionBody(
+        func: KSFunctionDeclaration,
+        delegateName: String,
+        fileName: String
+    ): FunSpec.Builder = this.apply {
+        val functionName = func.simpleName.asString()
+        val hasReturn = func.returnType?.toString() != "Unit"
+
+        val params2 = func.parameters.map { param ->
+            param.name?.getShortName() to param.type
+        }
+        val paramsNames = params2.joinToString(", ") { "${it.first}" }
+        val paramsPrint = params2.joinToString(", ") { "${it.first}=\$${it.first}" }
+
+        this.addStatement("val result = ${delegateName}.${functionName}(${paramsNames})")
+
+        var returnStr = ""
+        if (hasReturn) {
+            returnStr = "->\$result"
+        }
+
+        this.addStatement("""println("${fileName}: ${functionName}(${paramsPrint})${returnStr}")""")
+        if (hasReturn) {
+            this.addStatement("return result")
+        }
     }
 
 }

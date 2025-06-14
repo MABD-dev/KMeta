@@ -24,12 +24,9 @@ class RealApiService: ApiService {
 
 
 fun main() {
-    println("Hello World!")
+    val apiService = ApiServiceLoggerImpl(RealApiService())
 
-    val realApiService = RealApiService()
-    val a = ApiServiceLoggerImpl(realApiService)
-
-    a.test()
-    a.test2(1)
-    a.test3(3)
+    apiService.test()
+    apiService.test2(1)
+    apiService.test3(3)
 }
