@@ -13,6 +13,7 @@ interface ApiService {
     )
     fun test()
 
+    @NoLog
     fun test2(a: Int)
 
     /**

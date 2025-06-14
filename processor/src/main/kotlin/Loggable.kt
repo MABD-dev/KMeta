@@ -14,6 +14,14 @@ import com.squareup.kotlinpoet.ksp.writeTo
 annotation class Loggable
 
 
+/**
+ * Mark function with this annotation to skip logging in that function
+ */
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.SOURCE)
+annotation class NoLog
+
+
 class LoggableProcessor(
     private val env: SymbolProcessorEnvironment
 ): SymbolProcessor {
@@ -63,10 +71,7 @@ class LoggableProcessor(
 
         val functions = this
             .getDeclaredFunctions()
-            .map {
-//                it.an
-                it.createFunctionSpecs(delegateName, fileName)
-            }
+            .map { it.createFunctionSpecs(delegateName, fileName) }
             .toList()
 
         loggerClass.addFunctions(functions)
@@ -144,7 +149,14 @@ class LoggableProcessor(
             returnStr = "->\$result"
         }
 
-        this.addStatement("""println("${fileName}: ${functionName}(${paramsPrint})${returnStr}")""")
+        val doLog = func.annotations
+            .filter { it.shortName.asString() == "NoLog" }
+            .toList()
+            .isEmpty()
+        if (doLog) {
+            this.addStatement("""println("${fileName}: ${functionName}(${paramsPrint})${returnStr}")""")
+        }
+
         if (hasReturn) {
             this.addStatement("return result")
         }

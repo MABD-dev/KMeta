@@ -21,45 +21,75 @@ This repository contains educational and production-style KSP processors created
 Automatically generate a decorator implementation for any interface annotated with `@Loggable`.  
 The generated class logs function calls, input parameters, and return values.
 
+#### **Features**
+
+- Generates a decorator (e.g., `MyApiLoggerImpl`) for every interface annotated with `@Loggable`.
+- All function calls are delegated and logged with their parameters and results.
+- Preserves all function modifiers (`suspend`, `operator`, etc.), annotations, and KDoc.
+- Supports per-function logging opt-out via the `@NoLog` annotation.
+- Retains KDoc from both interfaces and functions in the generated code.
+
+
 #### **How it works:**
 
-1. Annotate your interface:
+1. **Annotate your interface:**
+
     ```kotlin
     @Loggable
     interface MyApi {
-        fun doSomething(x: Int, y: String): Boolean
-        fun getData(): List<String>
+        /**
+         * Does something important.
+         */
+        suspend fun doSomething(x: Int, y: String): Boolean
+
+        @NoLog
+        fun getRawData(): List<String>
     }
     ```
-2. The processor generates a class:
+
+2. **After build, the processor generates:**
+
     ```kotlin
     class MyApiLoggerImpl(private val delegate: MyApi) : MyApi {
-        override fun doSomething(x: Int, y: String): Boolean {
+        /**
+         * Does something important.
+         */
+        override suspend fun doSomething(x: Int, y: String): Boolean {
             val result = delegate.doSomething(x, y)
             println("MyApiLoggerImpl: doSomething(x=$x, y=$y)->$result")
             return result
         }
 
-        override fun getData(): List<String> {
-            val result = delegate.getData()
-            println("MyApiLoggerImpl: getData()->$result")
+        @NoLog
+        override fun getRawData(): List<String> {
+            val result = delegate.getRawData()
+            // Logging is skipped for this function!
             return result
         }
     }
     ```
-3. Use the generated class to wrap your implementation:
+
+3. **Wrap your real implementation with the logger:**
+
     ```kotlin
-    val loggedApi = MyApiLoggerImpl(realApi)
+    val api: MyApi = MyApiLoggerImpl(realApi)
     ```
 
+
+#### **Customization**
+
+- **Skip logging** for specific functions by annotating them with `@NoLog`.
+- All interface-level and function-level documentation and annotations are preserved.
+
+
 ### Upcoming Features:
-- [ ] Handle suspend functions
-- [ ] Match functions modifier
+- [X] Copy modifiers to generated functions
+- [X] Copy docs from original code
+- [X] Add annotation to function to skip logging
 - [ ] Support for function default params
-- [ ] Match visibility modifiers
 - [ ] Handle generics
-- [ ] Copy docs from original code
-- [ ] Add annotation to function to skip logging
+- [ ] Support varargs
+- [ ] Support properties
 
 
 ---
