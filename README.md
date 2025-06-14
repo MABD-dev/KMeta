@@ -59,6 +59,7 @@ The generated class logs function calls, input parameters, and return values.
 - [ ] Match visibility modifiers
 - [ ] Handle generics
 - [ ] Copy docs from original code
+- [ ] Add annotation to function to skip logging
 
 
 ---
