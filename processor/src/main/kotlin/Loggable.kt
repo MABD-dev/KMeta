@@ -16,7 +16,6 @@ class LoggableProcessor(
     private val env: SymbolProcessorEnvironment
 ): SymbolProcessor {
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        println("Process function")
         val symbols = resolver.getSymbolsWithAnnotation("org.mabd.Loggable")
 
         symbols
