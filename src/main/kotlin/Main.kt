@@ -1,7 +1,7 @@
 package org.mabd
 
 
-@MyAnnotation
+@Loggable
 class DemoClass
 
 fun main() {

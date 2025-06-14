@@ -9,14 +9,14 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.SOURCE)
-annotation class MyAnnotation
+annotation class Loggable
 
 
-class MyProcessor(
+class LoggableProcessor(
     val env: SymbolProcessorEnvironment
 ): SymbolProcessor {
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val symbols = resolver.getSymbolsWithAnnotation("org.mabd.MyAnnotation")
+        val symbols = resolver.getSymbolsWithAnnotation("org.mabd.Loggable")
         symbols.forEach { symbol ->
             if (symbol is KSClassDeclaration) {
                 env.logger.warn("Found class ${symbol.simpleName.asString()}")
@@ -26,9 +26,9 @@ class MyProcessor(
     }
 }
 
-class MyProcessorProvider: SymbolProcessorProvider {
+class LoggableProvider: SymbolProcessorProvider {
     override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
-        return MyProcessor(environment)
+        return LoggableProcessor(environment)
     }
 
 }
