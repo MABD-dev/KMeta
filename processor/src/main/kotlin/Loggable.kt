@@ -3,6 +3,9 @@ package org.mabd
 import com.google.devtools.ksp.getDeclaredFunctions
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
+import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ksp.toTypeName
+import com.squareup.kotlinpoet.ksp.writeTo
 import java.io.OutputStreamWriter
 
 @Target(AnnotationTarget.CLASS)
@@ -11,7 +14,7 @@ annotation class Loggable
 
 
 class LoggableProcessor(
-    val env: SymbolProcessorEnvironment
+    private val env: SymbolProcessorEnvironment
 ): SymbolProcessor {
     override fun process(resolver: Resolver): List<KSAnnotated> {
         println("Process function")
@@ -20,107 +23,87 @@ class LoggableProcessor(
         symbols
             .filterIsInstance<KSClassDeclaration>()
             .forEach { symbol ->
-                val kclass = symbol as? KSClassDeclaration ?: return@forEach
+                val klass = symbol as? KSClassDeclaration ?: return@forEach
 
-                if (kclass.classKind != ClassKind.INTERFACE) {
+                if (klass.classKind != ClassKind.INTERFACE) {
                     env.logger.error("Loggable is only applicable for interfaces only")
                 }
-
-//                val functionsStr = symbol.functionsString().joinToString("\n")
-//                env.logger.warn(functionsStr)
-
-                val packageName = symbol.packageName.asString()
-                val interfaceName = symbol.simpleName.asString()
-                val fileName = "${interfaceName}LoggerImpl"
-
-                val file = env.codeGenerator.createNewFile(
-                    dependencies = Dependencies(aggregating = false),
-                    packageName = packageName,
-                    fileName = fileName
-                )
-                file
-                    .writer()
-                    .use { writer ->
-                        writer.writeLoggerImpl(packageName, interfaceName, fileName, symbol)
-                    }
+                val fileSpec = klass.createFile()
+                fileSpec.writeTo(env.codeGenerator, Dependencies(false))
             }
-
-
-
-//        symbols.forEach { symbol ->
-//            env.logger.warn("testing shit")
-
-            // Limit usage to interfaces only
-
-//            env.logger.warn("functions:-----")
-//            kclass.getAllFunctions().forEach functions@ { ksFunctionDecleration ->
-//                if (ksFunctionDecleration.functionKind != FunctionKind.MEMBER) return@functions
-//
-//                env.logger.warn("function: name=${ksFunctionDecleration.simpleName.asString()}, returnType=${ksFunctionDecleration.returnType}")
-//                env.logger.warn("\tparams:-----")
-//                ksFunctionDecleration.parameters.forEach { param ->
-//                    env.logger.warn("\tparam name=${param.name?.getShortName()}, isVal=${param.isVal}, isVar=${param.isVar}, type=${param.type}, hasDefault=${param.hasDefault}, ")
-//                }
-//                env.logger.warn("\t")
-//
-//            }
-//            env.logger.warn("---------")
-//        }
         return emptyList()
     }
 
-    private fun OutputStreamWriter.writeLoggerImpl(
-        packageName: String,
-        interfaceName: String,
-        fileName: String,
-        symbol: KSClassDeclaration
-    ) {
+    private fun KSClassDeclaration.createFile(): FileSpec {
+        val packageName = this.packageName.asString()
+        val interfaceName = this.simpleName.asString()
+        val fileName = "${interfaceName}LoggerImpl"
+
+
+        val loggerClassName = ClassName(packageName, fileName)
+        val interfaceClassName = ClassName(packageName, interfaceName)
+
         val delegateName = "delegate"
-        val functionsStr = symbol
-            .functionsBody(fileName, delegateName)
-            .joinToString("\n")
 
-        write(
-            """
-            package $packageName
-            
-            class $fileName(
-                private val $delegateName: $interfaceName
-            ): $interfaceName {
-                $functionsStr
-                
-            }
-            """.trimIndent()
-        )
-    }
+        val delegateProp = PropertySpec.builder(delegateName, interfaceClassName)
+            .initializer(delegateName)
+            .addModifiers(KModifier.PRIVATE)
+            .build()
+        val constructor = FunSpec.constructorBuilder()
+            .addParameter(delegateName, interfaceClassName)
+            .build()
 
-    private fun KSClassDeclaration.functionsBody(
-        fileName: String,
-        delegateName: String
-    ): Sequence<String> {
-        return this.getDeclaredFunctions().map { func ->
+        val loggerClass = TypeSpec.classBuilder(loggerClassName)
+            .primaryConstructor(constructor)
+            .addProperty(delegateProp)
+            .addSuperinterface(interfaceClassName)
+
+        val functions = this.getDeclaredFunctions().map { func ->
             val functionName = func.simpleName.asString()
-            val returnType = func.returnType
+
+            val funcBuilder = FunSpec
+                .builder(functionName)
+                .addModifiers(KModifier.OVERRIDE)
+
+            // set function parameters
             val params = func.parameters.map { param ->
+                ParameterSpec(param.name?.asString() ?: "_", param.type.toTypeName())
+            }
+            funcBuilder.addParameters(params)
+
+            // set function return type
+
+            func.returnType?.toTypeName()?.let { funcBuilder.returns(it) }
+
+            // set function body
+            val hasReturn = func.returnType?.toString() != "Unit"
+
+            val params2 = func.parameters.map { param ->
                 param.name?.getShortName() to param.type
             }
-//                .joinToString(", ")
-            val paramsString = params.joinToString(", ") { "${it.first}: ${it.second}" }
-            val paramsNames = params.joinToString(", ") { "${it.first}" }
-            val paramsPrint = params.joinToString(", ") { "${it.first}=\$${it.first}" }
+            val paramsNames = params2.joinToString(", ") { "${it.first}" }
+            val paramsPrint = params2.joinToString(", ") { "${it.first}=\$${it.first}" }
 
-            val returnStr = if (returnType?.toString() == "Unit") "" else "return "
+            funcBuilder.addStatement("val result = ${delegateName}.${functionName}(${paramsNames})")
 
+            var returnStr = ""
+            if (hasReturn) {
+                returnStr = "->\$result"
+            }
 
-//            return delegate.test3(b)
-//                .also { println("ShitLogger: test3(b=$b)=$it") }
-            """
-                override fun ${functionName}(${paramsString}): ${returnType} {
-                    ${returnStr}${delegateName}.${functionName}(${paramsNames})
-                        .also { println("${fileName}: ${functionName}(${paramsPrint})=\$" + it) }
-                }
-            """.trimIndent()
+            funcBuilder.addStatement("""println("${fileName}: ${functionName}(${paramsPrint})${returnStr}")""")
+            if (hasReturn) {
+                funcBuilder.addStatement("return result")
+            }
+
+            funcBuilder.build()
         }
+
+        loggerClass.addFunctions(functions.toList())
+
+        return FileSpec.builder(loggerClassName)
+            .addType(loggerClass.build())
+            .build()
     }
 
 }
