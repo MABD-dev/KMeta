@@ -6,7 +6,13 @@ package org.mabd
  */
 @Loggable
 interface ApiService {
+
+    @Deprecated(
+        message = "just for testing",
+        replaceWith = ReplaceWith("test2(1)")
+    )
     fun test()
+
     fun test2(a: Int)
 
     /**

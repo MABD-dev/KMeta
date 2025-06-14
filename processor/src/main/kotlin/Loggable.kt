@@ -4,6 +4,7 @@ import com.google.devtools.ksp.getDeclaredFunctions
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
 import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ksp.toAnnotationSpec
 import com.squareup.kotlinpoet.ksp.toKModifier
 import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
@@ -62,7 +63,10 @@ class LoggableProcessor(
 
         val functions = this
             .getDeclaredFunctions()
-            .map { it.createFunctionSpecs(delegateName, fileName) }
+            .map {
+//                it.an
+                it.createFunctionSpecs(delegateName, fileName)
+            }
             .toList()
 
         loggerClass.addFunctions(functions)
@@ -77,6 +81,7 @@ class LoggableProcessor(
         fileName: String
     ): FunSpec = FunSpec
         .builder(this.simpleName.asString())
+        .addAnnotations(this)
         .addModifiers(KModifier.OVERRIDE)
         .addModifiers(this)
         .addKdocIfFound(this)
@@ -88,7 +93,13 @@ class LoggableProcessor(
     private fun FunSpec.Builder.addModifiers(
         func: KSFunctionDeclaration
     ) = this.apply {
-        addModifiers(*func.modifiers.mapNotNull { it.toKModifier() }.toTypedArray())
+        addModifiers(func.modifiers.mapNotNull { it.toKModifier() })
+    }
+
+    private fun FunSpec.Builder.addAnnotations(
+        func: KSFunctionDeclaration
+    ) = this.apply {
+        addAnnotations(func.annotations.map { it.toAnnotationSpec()}.toList())
     }
 
     private fun FunSpec.Builder.addKdocIfFound(
