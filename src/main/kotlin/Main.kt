@@ -1,10 +1,19 @@
 package org.mabd
 
 
+/**
+ * Testing docs on class
+ */
 @Loggable
 interface ApiService {
     fun test()
     fun test2(a: Int)
+
+    /**
+     * Testing docs on function with params and return
+     * @param b something
+     * @return some number
+     */
     fun test3(b: Int): Int
 }
 

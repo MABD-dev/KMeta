@@ -4,6 +4,7 @@ import com.google.devtools.ksp.getDeclaredFunctions
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
 import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ksp.toKModifier
 import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
 
@@ -57,6 +58,8 @@ class LoggableProcessor(
             .addProperty(delegateProp)
             .addSuperinterface(interfaceClassName)
 
+        this.docString?.let { loggerClass.addKdoc(it) }
+
         val functions = this
             .getDeclaredFunctions()
             .map { it.createFunctionSpecs(delegateName, fileName) }
@@ -75,11 +78,17 @@ class LoggableProcessor(
     ): FunSpec = FunSpec
         .builder(this.simpleName.asString())
         .addModifiers(KModifier.OVERRIDE)
+        .addKdocIfFound(this)
         .addParams(this)
         .addFunctionBody(this, delegateName, fileName)
         .addReturnType(this)
         .build()
 
+    private fun FunSpec.Builder.addKdocIfFound(
+        func: KSFunctionDeclaration
+    ) = this.apply {
+        func.docString?.let { this.addKdoc(it) }
+    }
     private fun FunSpec.Builder.addParams(
         func: KSFunctionDeclaration
     ) = this.apply {
