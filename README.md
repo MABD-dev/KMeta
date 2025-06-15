@@ -25,6 +25,7 @@ The generated class logs function calls, input parameters, and return values.
 
 - Generates a decorator (e.g., `MyApiLoggerImpl`) for every interface annotated with `@Loggable`.
 - All function calls are delegated and logged with their parameters and results.
+- All properties are delegated and logged
 - Preserves all function modifiers (`suspend`, `operator`, etc.), annotations, and KDoc.
 - Supports per-function logging opt-out via the `@NoLog` annotation.
 - Retains KDoc from both interfaces and functions in the generated code.
@@ -38,6 +39,9 @@ The generated class logs function calls, input parameters, and return values.
     ```kotlin
     @Loggable
     interface MyApi {
+   
+       var isDebug: Boolean
+   
         /**
          * Does something important.
          */
@@ -45,6 +49,8 @@ The generated class logs function calls, input parameters, and return values.
 
         @NoLog
         fun getRawData(): List<String>
+   
+        fun <T>getSomething(): List<T>
     }
     ```
 
@@ -52,6 +58,18 @@ The generated class logs function calls, input parameters, and return values.
 
     ```kotlin
     class MyApiLoggerImpl(private val delegate: MyApi) : MyApi {
+
+      override var isDebug: Boolean
+         get() {
+            val result = delegate.isDebug
+            println("ApiServiceLoggerImpl: get isDebug:=${result}")
+            return result
+         }
+         set(`value`) {
+            delegate.isDebug = value
+            println("ApiServiceLoggerImpl: set isDebug:=${value}")
+         }
+   
         /**
          * Does something important.
          */
@@ -67,6 +85,13 @@ The generated class logs function calls, input parameters, and return values.
             // Logging is skipped for this function!
             return result
         }
+   
+        
+         override fun <T> getSomething(a: T)  {
+            val result = delegate.getSomething<T>(a)
+            println("ApiServiceLoggerImpl: doSomething(a=$a)")
+            return result
+         }
     }
     ```
 
@@ -89,8 +114,9 @@ The generated class logs function calls, input parameters, and return values.
 - [X] Add annotation to function to skip logging
 - [X] Handle generics
 - [X] Support varargs
-- [ ] Support properties
+- [X] Support properties
 - [ ] Support for function default params
+- [ ] Support generic return types
 
 
 ---

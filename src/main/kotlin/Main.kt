@@ -10,6 +10,8 @@ import org.mabd.loggable.NoLog
 @Loggable
 interface ApiService<T> {
 
+    var isAuth: Boolean?
+
     @Deprecated(
         message = "just for testing",
         replaceWith = ReplaceWith("test2(1)")
@@ -32,6 +34,7 @@ interface ApiService<T> {
 }
 
 class RealApiService: ApiService<String> {
+    override var isAuth: Boolean? = false
 
     override fun test() {}
     override fun test2(a: Int) {}
@@ -46,9 +49,13 @@ class RealApiService: ApiService<String> {
 fun main() {
     val apiService = ApiServiceLoggerImpl(RealApiService())
 
+    println(apiService.isAuth)
+    apiService.isAuth = true
+
     apiService.test()
     apiService.test2(1)
     apiService.test3(3)
     apiService.test4<Int, Int>()
     apiService.test5(1, .1f, .2f)
+
 }

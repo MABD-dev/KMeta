@@ -6,10 +6,7 @@ import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.ksp.toAnnotationSpec
-import com.squareup.kotlinpoet.ksp.toKModifier
-import com.squareup.kotlinpoet.ksp.toTypeName
-import com.squareup.kotlinpoet.ksp.writeTo
+import com.squareup.kotlinpoet.ksp.*
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.SOURCE)
@@ -19,7 +16,10 @@ annotation class Loggable
 /**
  * Mark function with this annotation to skip logging in that function
  */
-@Target(AnnotationTarget.FUNCTION)
+@Target(
+    AnnotationTarget.FUNCTION,
+    AnnotationTarget.PROPERTY
+)
 @Retention(AnnotationRetention.SOURCE)
 annotation class NoLog
 
@@ -28,7 +28,7 @@ class LoggableProcessor(
     private val env: SymbolProcessorEnvironment
 ): SymbolProcessor {
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val symbols = resolver.getSymbolsWithAnnotation("org.mabd.Loggable")
+        val symbols = resolver.getSymbolsWithAnnotation("org.mabd.loggable.Loggable")
 
         symbols
             .filterIsInstance<KSClassDeclaration>()
@@ -76,7 +76,7 @@ class LoggableProcessor(
 
         val properties = this
             .getDeclaredProperties()
-            .map { it.createPropertySpecs() }
+            .map { it.createPropertySpecs(delegateName, fileName) }
             .toList()
         loggerClass.addProperties(properties)
 

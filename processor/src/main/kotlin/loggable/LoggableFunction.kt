@@ -7,6 +7,7 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.ksp.toAnnotationSpec
+import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toKModifier
 import com.squareup.kotlinpoet.ksp.toTypeName
 
@@ -75,7 +76,9 @@ internal fun FunSpec.Builder.addParams(
 internal fun FunSpec.Builder.addReturnType(
     func: KSFunctionDeclaration
 ) = this.apply {
-    func.returnType?.toTypeName()?.let { this.returns(it) }
+    func.returnType?.resolve()?.toTypeName()?.let {
+        this.returns(it)
+    }
 }
 
 internal fun FunSpec.Builder.addFunctionBody(
@@ -106,11 +109,7 @@ internal fun FunSpec.Builder.addFunctionBody(
         returnStr = "->\$result"
     }
 
-    val doLog = func.annotations
-        .filter { it.shortName.asString() == "NoLog" }
-        .toList()
-        .isEmpty()
-    if (doLog) {
+    if (func.annotations.doLog()) {
         this.addStatement("""println("${fileName}: ${functionName}(${paramsPrint})${returnStr}")""")
     }
 
