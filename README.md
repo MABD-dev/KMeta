@@ -115,8 +115,6 @@ The generated class logs function calls, input parameters, and return values.
 - [X] Handle generics
 - [X] Support varargs
 - [X] Support properties
-- [ ] Support for function default params
-- [ ] Support generic return types
 
 
 ---

@@ -2,14 +2,8 @@ package org.mabd.loggable
 
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSTypeParameter
-import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.ParameterSpec
-import com.squareup.kotlinpoet.TypeVariableName
-import com.squareup.kotlinpoet.ksp.toAnnotationSpec
-import com.squareup.kotlinpoet.ksp.toClassName
-import com.squareup.kotlinpoet.ksp.toKModifier
-import com.squareup.kotlinpoet.ksp.toTypeName
+import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ksp.*
 
 internal fun KSFunctionDeclaration.createFunctionSpecs(
     delegateName: String,
@@ -76,7 +70,8 @@ internal fun FunSpec.Builder.addParams(
 internal fun FunSpec.Builder.addReturnType(
     func: KSFunctionDeclaration
 ) = this.apply {
-    func.returnType?.resolve()?.toTypeName()?.let {
+    val typeParameterResolver = func.typeParameters.toTypeParameterResolver()
+    func.returnType?.resolve()?.toTypeName(typeParameterResolver)?.let {
         this.returns(it)
     }
 }
