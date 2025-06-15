@@ -61,12 +61,12 @@ The generated class logs function calls, input parameters, and return values.
       override var isDebug: Boolean
          get() {
             val result = delegate.isDebug
-            println("ApiServiceLoggerImpl: get isDebug:=${result}")
+            println("MyApiLoggerImpl: get isDebug:=${result}")
             return result
          }
          set(`value`) {
             delegate.isDebug = value
-            println("ApiServiceLoggerImpl: set isDebug:=${value}")
+            println("MyApiLoggerImpl: set isDebug:=${value}")
          }
    
         /**
@@ -88,7 +88,7 @@ The generated class logs function calls, input parameters, and return values.
         
          override fun <T> getSomething(a: T)  {
             val result = delegate.getSomething<T>(a)
-            println("ApiServiceLoggerImpl: doSomething(a=$a)")
+            println("MyApiLoggerImpl: doSomething(a=$a)")
             return result
          }
     }
