@@ -12,7 +12,6 @@ This repository contains educational and production-style KSP processors created
 - **Experiment**: Try out various code generation and analysis patterns.
 - **Share**: Help others by providing minimal, focused, real-world KSP use cases.
 
----
 
 ## 📦 Processors in This Repo
 
