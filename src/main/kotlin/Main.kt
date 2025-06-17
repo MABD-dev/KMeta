@@ -7,7 +7,9 @@ import org.mabd.loggable.NoLog
 /**
  * Testing docs on class
  */
-@Loggable
+@Loggable(
+    tag = "MyLogTag"
+)
 interface ApiService<T> {
 
     var isAuth: Boolean?

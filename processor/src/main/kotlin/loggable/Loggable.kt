@@ -8,9 +8,14 @@ import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.ksp.*
 
+/**
+ * @param tag if [tag] is blank, generated class name will be used as a tag
+ */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.SOURCE)
-annotation class Loggable
+annotation class Loggable(
+    val tag: String = "",
+)
 
 
 /**
@@ -22,7 +27,6 @@ annotation class Loggable
 )
 @Retention(AnnotationRetention.SOURCE)
 annotation class NoLog
-
 
 class LoggableProcessor(
     private val env: SymbolProcessorEnvironment
@@ -47,6 +51,7 @@ class LoggableProcessor(
         val interfaceName = this.simpleName.asString()
         val fileName = "${interfaceName}LoggerImpl"
 
+        val args = this.createAnnotationArgs()
         val typeParameters = this.typeParameters.map { it.toTypeVariable() }
 
         val loggerClassName = ClassName(packageName, fileName)
@@ -80,13 +85,35 @@ class LoggableProcessor(
 
         val functions = this
             .getDeclaredFunctions()
-            .map { it.createFunctionSpecs(delegateName, fileName) }
+            .map { it.createFunctionSpecs(delegateName, args) }
             .toList()
         loggerClass.addFunctions(functions)
 
         return FileSpec.builder(loggerClassName)
             .addType(loggerClass.build())
             .build()
+    }
+
+
+    private fun KSClassDeclaration.createAnnotationArgs(): Loggable {
+        val interfaceName = this.simpleName.asString()
+        val fileName = "${interfaceName}LoggerImpl"
+
+        var tag: String = fileName
+
+        val loggableAnnotation = this.annotations.firstOrNull {
+            it.shortName.asString() == Loggable::class.java.name
+        }
+
+        loggableAnnotation?.arguments?.forEach { arg ->
+            when (arg.name?.asString()?.lowercase()) {
+                "tag" -> tag = arg.value as? String ?: tag
+            }
+        }
+
+        return Loggable(
+            tag = tag,
+        )
     }
 
 }

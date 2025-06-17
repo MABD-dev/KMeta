@@ -7,7 +7,7 @@ import com.squareup.kotlinpoet.ksp.*
 
 internal fun KSFunctionDeclaration.createFunctionSpecs(
     delegateName: String,
-    fileName: String
+    args: Loggable
 ): FunSpec = FunSpec
     .builder(this.simpleName.asString())
     .addAnnotations(this)
@@ -16,7 +16,7 @@ internal fun KSFunctionDeclaration.createFunctionSpecs(
     .addTypeVariableIfFound(this)
     .addKdocIfFound(this)
     .addParams(this)
-    .addFunctionBody(this, delegateName, fileName)
+    .addFunctionBody(this, delegateName, args)
     .addReturnType(this)
     .build()
 
@@ -79,7 +79,7 @@ internal fun FunSpec.Builder.addReturnType(
 internal fun FunSpec.Builder.addFunctionBody(
     func: KSFunctionDeclaration,
     delegateName: String,
-    fileName: String
+    args: Loggable
 ): FunSpec.Builder = this.apply {
     val functionName = func.simpleName.asString()
     val hasReturn = func.returnType?.toString() != "Unit"
@@ -105,7 +105,7 @@ internal fun FunSpec.Builder.addFunctionBody(
     }
 
     if (func.annotations.doLog()) {
-        this.addStatement("""println("${fileName}: ${functionName}(${paramsPrint})${returnStr}")""")
+        this.addStatement("""println("${args.tag}: ${functionName}(${paramsPrint})${returnStr}")""")
     }
 
     if (hasReturn) {

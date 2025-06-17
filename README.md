@@ -118,6 +118,17 @@ The generated class logs function calls, input parameters, and return values.
 
 ---
 
+## 📚 **Customizations**
+
+### Log tag
+Change log tag as you like by adding tag property to `@Loggable`
+```kotlin
+@Loggable(tag = "MyLogTag")
+class Something {
+    //...
+}
+
+```
 
 ## 📚 **Learning Resources**
 
