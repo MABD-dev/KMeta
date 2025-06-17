@@ -28,17 +28,15 @@ class LoggableProcessor(
     private val env: SymbolProcessorEnvironment
 ): SymbolProcessor {
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val symbols = resolver.getSymbolsWithAnnotation("org.mabd.loggable.Loggable")
+        val symbols = resolver.getSymbolsWithAnnotation(Loggable::class.java.name)
 
         symbols
             .filterIsInstance<KSClassDeclaration>()
             .forEach { symbol ->
-                val klass = symbol as? KSClassDeclaration ?: return@forEach
-
-                if (klass.classKind != ClassKind.INTERFACE) {
+                if (symbol.classKind != ClassKind.INTERFACE) {
                     env.logger.error("Loggable is only applicable for interfaces only")
                 }
-                val fileSpec = klass.createFile()
+                val fileSpec = symbol.createFile()
                 fileSpec.writeTo(env.codeGenerator, Dependencies(false))
             }
         return emptyList()
