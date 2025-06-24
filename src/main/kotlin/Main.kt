@@ -1,5 +1,6 @@
 package org.mabd
 
+import org.mabd.copy.Copy
 import org.mabd.loggable.Loggable
 import org.mabd.loggable.NoLog
 
@@ -46,7 +47,11 @@ class RealApiService: ApiService<String> {
 
 }
 
-
+@Copy
+class User(
+    val age: Int,
+    val name: String,
+)
 
 fun main() {
     val apiService = ApiServiceLoggerImpl(RealApiService())
@@ -60,4 +65,12 @@ fun main() {
     apiService.test4<Int, Int>()
     apiService.test5(1, .1f, .2f)
 
+    val user = User(1, "someone")
+    println(user.toNiceString())
+
+}
+
+// TODO: create processor to generate this function on non data-classes
+private fun User.toNiceString(): String {
+    return "User(age=${this.age}, name=${this.name})"
 }

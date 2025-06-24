@@ -13,6 +13,10 @@ This repository contains educational and production-style KSP processors created
 - **Share**: Help others by providing minimal, focused, real-world KSP use cases.
 
 
+# Table Of Content:
+- [@Loggable](#1-loggable--logging-decorator-for-interfaces)
+- [@Copy](#2-copy--data-class-style-copy-for-regular-classes)
+
 ## 📦 Processors in This Repo
 
 ### 1. `@Loggable` — Logging Decorator for Interfaces
@@ -106,29 +110,37 @@ The generated class logs function calls, input parameters, and return values.
 - **Skip logging** for specific functions by annotating them with `@NoLog`.
 - All interface-level and function-level documentation and annotations are preserved.
 
+---
 
-### Upcoming Features:
-- [X] Copy modifiers to generated functions
-- [X] Copy docs from original code
-- [X] Add annotation to function to skip logging
-- [X] Handle generics
-- [X] Support varargs
-- [X] Support properties
+### 2. `@Copy` — Data-Class-Style Copy for Regular Classes
+Adds a copy extension function to any regular (non-data) class annotated with @Copy.
+This function mimics Kotlin’s data class copy, allowing you to conveniently clone objects and change only the properties you want.
+
+#### How It Works:
+```kotlin
+@Copy
+class Person(val name: String, val age: Int)
+```
+
+Generated code
+```kotlin
+fun Person.copy(
+    name: String = this.name,
+    age: Int = this.age
+): Person = Person(name, age)
+```
+
+
+#### Upcoming Features:
+- [ ] Non-Primary Constructor Parameters
+- [ ] Non-Property Parameters
+- [ ] Support for classes with default values in constructors
+- [ ] KDoc and annotations
+- [ ] Multiple packages. Generate extension file per package
 
 
 ---
 
-## 📚 **Customizations**
-
-### Log tag
-Change log tag as you like by adding tag property to `@Loggable`
-```kotlin
-@Loggable(tag = "MyLogTag")
-class Something {
-    //...
-}
-
-```
 
 ## 📚 **Learning Resources**
 

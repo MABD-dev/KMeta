@@ -15,7 +15,7 @@ import org.mabd.loggable.Loggable
 import org.mabd.loggable.toTypeVariable
 
 
-class LoggerImplClassGenerator(
+internal class LoggerImplClassGenerator(
     val declaration: KSClassDeclaration
 ) {
 
