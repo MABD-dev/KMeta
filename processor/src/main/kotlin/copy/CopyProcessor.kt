@@ -43,7 +43,7 @@ class CopyProcessor(
         }
 
         val functions = classDeclarations.mapNotNull { declaration ->
-            ClassCopyFunGenerator(declaration).generate()
+            ClassCopyFunGenerator(declaration).generate(env.logger)
         }
 
         val packageName = classDeclarations.first().packageName.asString()
