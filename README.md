@@ -120,16 +120,13 @@ This function mimics Kotlin’s data class copy, allowing you to conveniently cl
 ```kotlin
 @Copy
 class Person(val name: String, val age: Int)
-```
 
-Generated code
-```kotlin
+// generated function
 fun Person.copy(
-    name: String = this.name,
-    age: Int = this.age
+   name: String = this.name,
+   age: Int = this.age
 ): Person = Person(name, age)
 ```
-
 
 #### Upcoming Features:
 - [ ] Non-Primary Constructor Parameters
