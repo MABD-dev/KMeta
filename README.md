@@ -129,10 +129,7 @@ fun Person.copy(
 ```
 
 #### Upcoming Features:
-- [ ] Non-Primary Constructor Parameters
-- [ ] Non-Property Parameters
 - [ ] Support for classes with default values in constructors
-- [ ] KDoc and annotations
 - [ ] Multiple packages. Generate extension file per package
 
 

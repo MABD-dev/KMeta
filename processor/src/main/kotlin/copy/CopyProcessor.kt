@@ -42,13 +42,22 @@ class CopyProcessor(
             return emptyList()
         }
 
-        val functions = classDeclarations.mapNotNull { declaration ->
-            ClassCopyFunGenerator(declaration).generate()
-        }
+        val functionsInfo = classDeclarations
+            .groupBy { declaration -> declaration.packageName.asString() }
+            .mapNotNull { (packageName, declarations) ->
+                val functions = declarations
+                    .mapNotNull { declaration ->
+                        ClassCopyFunGenerator(declaration).generate(env.logger)
+                    }
+                    .ifEmpty { return@mapNotNull null }
 
-        val packageName = classDeclarations.first().packageName.asString()
-        val fileSpec = ExtensionFileGenerator(packageName, functions).generate()
-        fileSpec.writeTo(env.codeGenerator, Dependencies(false))
+                packageName to functions
+            }.toMap()
+
+        functionsInfo.map { (packageName, functions) ->
+            val fileSpec = ExtensionFileGenerator(packageName, functions).generate()
+            fileSpec.writeTo(env.codeGenerator, Dependencies(false))
+        }
 
         return emptyList()
     }

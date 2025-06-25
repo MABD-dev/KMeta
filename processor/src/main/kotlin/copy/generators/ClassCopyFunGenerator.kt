@@ -1,26 +1,38 @@
 package org.mabd.copy.generators
 
+import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSValueParameter
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
+import jdk.internal.net.http.frame.Http2Frame.asString
+import org.mabd.createGeneratedAnnotation
 
 
 class ClassCopyFunGenerator (
     private val declaration: KSClassDeclaration
 ) {
 
-    fun generate(): FunSpec? {
+    fun generate(logger: KSPLogger): FunSpec? {
         val constructorParameters = declaration
             .primaryConstructor
             ?.parameters
-            ?: return null
+            ?: run {
+                logger.warn("${declaration.qualifiedName?.asString()} has no primary constructor")
+                return null
+            }
+
+        if (constructorParameters.isEmpty()) {
+            logger.warn("${declaration.qualifiedName?.asString()} has no parameters in primary constructor")
+            return null
+        }
 
         val className = declaration.toClassName()
         val func = FunSpec.builder("copy")
             .receiver(className)
+            .addAnnotation(createGeneratedAnnotation())
 
         val parameterSpecs = constructorParameters.createParameterSpecs()
         func.addParameters(parameterSpecs)
@@ -36,13 +48,17 @@ class ClassCopyFunGenerator (
     }
 
     private fun List<KSValueParameter>.createParameterSpecs(): List<ParameterSpec> {
-        return this.mapNotNull {
-            val name = it.name?.asString() ?: return@mapNotNull null
-            val type = it.type.toTypeName()
+        return this.mapNotNull { param ->
+            val name = param.name?.asString() ?: return@mapNotNull null
+            val type = param.type.toTypeName()
 
-            ParameterSpec.builder(name, type)
-                .defaultValue("this.${name}")
-                .build()
+            val builder = ParameterSpec.builder(name, type)
+
+            if (param.isVar || param.isVal) {
+                builder.defaultValue("this.${name}")
+            }
+
+            builder.build()
         }
     }
 
