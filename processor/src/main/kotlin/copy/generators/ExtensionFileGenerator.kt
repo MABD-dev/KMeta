@@ -7,7 +7,7 @@ import org.mabd.createGeneratedAnnotation
 
 class ExtensionFileGenerator (
     private val packageName: String,
-    private val functions: Sequence<FunSpec>
+    private val functions: List<FunSpec>
 ) {
 
     fun generate(): FileSpec {
