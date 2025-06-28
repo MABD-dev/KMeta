@@ -1,4 +1,4 @@
-package org.mabd.mimic_data_class.generators
+package mimic_data_class.generators
 
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.symbol.KSClassDeclaration
@@ -7,7 +7,7 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
-import org.mabd.common.createGeneratedAnnotation
+import common.createGeneratedAnnotation
 
 
 class ClassCopyFunGenerator (

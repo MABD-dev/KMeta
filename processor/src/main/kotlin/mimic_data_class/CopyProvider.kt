@@ -1,4 +1,4 @@
-package org.mabd.mimic_data_class
+package mimic_data_class
 
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment

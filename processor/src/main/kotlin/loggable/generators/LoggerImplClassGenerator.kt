@@ -1,4 +1,4 @@
-package org.mabd.loggable.generators
+package loggable.generators
 
 import com.google.devtools.ksp.getDeclaredFunctions
 import com.google.devtools.ksp.getDeclaredProperties
@@ -10,9 +10,9 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
-import org.mabd.loggable.DELEGATE_NAME
-import org.mabd.loggable.Loggable
-import org.mabd.loggable.toTypeVariable
+import loggable.DELEGATE_NAME
+import loggable.Loggable
+import loggable.toTypeVariable
 
 
 internal class LoggerImplClassGenerator(

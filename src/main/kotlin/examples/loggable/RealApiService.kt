@@ -1,4 +1,4 @@
-package org.mabd.examples.loggable
+package examples.loggable
 
 //
 /**

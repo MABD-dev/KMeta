@@ -1,6 +1,6 @@
-package org.mabd
+package examples.mimic_data_class
 
-import org.mabd.mimic_data_class.Copy
+import mimic_data_class.Copy
 
 
 @Copy
@@ -10,12 +10,11 @@ class User(
 )
 
 fun main() {
-//    val user = User(1, "someone")
-//    val user2 = user.copy(age = 10)
-//
-//    println(user.toNiceString())
-//    println(user2.toNiceString())
+    val user = User(1, "someone")
+    val user2 = user.copy(age = 10)
 
+    println(user.toNiceString())
+    println(user2.toNiceString())
 }
 
 // TODO: create processor to generate this function on non data-classes

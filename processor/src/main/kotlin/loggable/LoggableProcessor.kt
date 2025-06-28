@@ -1,10 +1,10 @@
-package org.mabd.loggable
+package loggable
 
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
 import com.google.devtools.ksp.validate
 import com.squareup.kotlinpoet.ksp.*
-import org.mabd.loggable.generators.LoggerImplClassGenerator
+import loggable.generators.LoggerImplClassGenerator
 
 /**
  * @param tag if [tag] is blank, generated class name will be used as a tag

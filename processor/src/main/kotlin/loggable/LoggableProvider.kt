@@ -1,4 +1,4 @@
-package org.mabd.loggable
+package loggable
 
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment

@@ -1,7 +1,7 @@
-package org.mabd.examples.loggable
+package examples.loggable
 
-import org.mabd.loggable.Loggable
-import org.mabd.loggable.NoLog
+import loggable.Loggable
+import loggable.NoLog
 
 
 @Loggable(
