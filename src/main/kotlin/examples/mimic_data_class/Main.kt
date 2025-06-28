@@ -1,6 +1,6 @@
 package examples.mimic_data_class
 
-import mimic_data_class.Copy
+import mimic_data_class.copyProcessor.Copy
 
 
 @Copy

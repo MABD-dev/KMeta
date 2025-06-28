@@ -1,4 +1,4 @@
-package mimic_data_class.generators
+package mimic_data_class.copyProcessor.generators
 
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.symbol.KSClassDeclaration

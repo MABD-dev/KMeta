@@ -1,2 +1,2 @@
 loggable.LoggableProvider
-mimic_data_class.CopyProvider
+mimic_data_class.copyProcessor.CopyProvider

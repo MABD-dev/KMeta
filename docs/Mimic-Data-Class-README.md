@@ -3,12 +3,14 @@ Data-Class-Style Copy for Regular Classes
 
 
 ## Table Of Content
-- [What does it do](#what-does-it-do)
-- [How it works](#how-it-works)
-- [Upcoming Features](#upcoming-features)
+- [Copy processor]()
+    - [What does it do](#what-does-it-do)
+    - [How it works](#how-it-works)
+    - [Upcoming Features](#upcoming-features)
 
 ---
 
+## Copy Processor
 
 ### **What does it do**
 Adds a copy extension function to any regular (non-data) class annotated with @Copy.
@@ -31,3 +33,4 @@ fun Person.copy(
 
 ### Upcoming Features:
 - [ ] Support for classes with default values in constructors
+
