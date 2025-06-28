@@ -20,6 +20,7 @@ data class Post2(
 
 fun main() {
     val user = User(10, "someone")
+
     val post = Post("something", 10 , listOf("a", "b"), user)
     val post2 = Post2("something", 10 , listOf("a", "b"), user)
 

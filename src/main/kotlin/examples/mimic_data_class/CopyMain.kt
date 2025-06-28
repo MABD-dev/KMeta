@@ -1,9 +1,11 @@
 package examples.mimic_data_class
 
 import mimic_data_class.copyProcessor.Copy
+import mimic_data_class.toStringProcessor.ToNiceString
 
 
 @Copy
+@ToNiceString
 class User(
     val age: Int,
     val name: String,
