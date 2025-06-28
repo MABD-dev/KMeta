@@ -16,7 +16,51 @@ This repository contains educational and production-style KSP processors created
 # Table Of Content:
 - [@Loggable](docs/Loggable-README.md)
 - [@Copy](docs/Mimic-Data-Class-README.md)
+- [Learning Resources](#-learning-resources)
+- [Contribution](#-contributing--ideas)
 
+***
+
+## **@Loggable**
+```kotlin
+@Loggable // <- add this
+interface ApiService {
+    fun fetchUserNames(): List<String>
+}
+
+// Generated code
+public class ApiService2LoggerImpl(
+    private val `delegate`: ApiService2,
+): ApiService {
+    
+    override fun fetchUserNames(): List<String> {
+        val result = delegate.fetchUserNames()
+        println("ApiService2LoggerImpl: fetchUserNames()->$result")
+        return result
+    }
+    
+}
+```
+view full `@Loggable` docs [here](docs/Loggable-README.md)
+
+## **@Copy**
+```kotlin
+@Copy // <- add this
+class Person(
+    val name: String,
+    val age: Int
+)
+
+// generated code
+fun Person.copy(
+    name = this.name,
+    age = this.age
+): Person = Person(name, age)
+```
+view full `@Copy` docs [here](docs/Mimic-Data-Class-README.md#copy-processor)
+
+
+***
 
 ## 📚 **Learning Resources**
 
