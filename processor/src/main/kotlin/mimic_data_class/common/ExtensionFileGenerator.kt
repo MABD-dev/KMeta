@@ -1,19 +1,17 @@
-package mimic_data_class.copyProcessor.generators
+package mimic_data_class.common
 
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import common.createGeneratedAnnotation
 
-
 class ExtensionFileGenerator (
     private val packageName: String,
+    private val fileName: String,
     private val functions: List<FunSpec>
 ) {
 
     fun generate(): FileSpec {
-        val fileName = "CopyExtension"
-
-        return FileSpec.builder(packageName, fileName)
+        return FileSpec.Companion.builder(packageName, fileName)
             .addAnnotation(createGeneratedAnnotation())
             .apply { functions.forEach { this.addFunction(it) } }
             .build()
