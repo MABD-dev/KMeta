@@ -1,4 +1,4 @@
-package org.mabd.loggable.generators
+package loggable.generators
 
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.squareup.kotlinpoet.FunSpec
@@ -8,10 +8,10 @@ import com.squareup.kotlinpoet.ksp.toAnnotationSpec
 import com.squareup.kotlinpoet.ksp.toKModifier
 import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.toTypeParameterResolver
-import org.mabd.loggable.DELEGATE_NAME
-import org.mabd.loggable.Loggable
-import org.mabd.loggable.doLog
-import org.mabd.loggable.toTypeVariable
+import loggable.DELEGATE_NAME
+import loggable.Loggable
+import loggable.doLog
+import loggable.toTypeVariable
 
 
 internal class ClassFunctionGenerator(

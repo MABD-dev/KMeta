@@ -1,4 +1,4 @@
-package org.mabd.loggable.generators
+package loggable.generators
 
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.squareup.kotlinpoet.FunSpec
@@ -7,8 +7,8 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.ksp.toAnnotationSpec
 import com.squareup.kotlinpoet.ksp.toKModifier
 import com.squareup.kotlinpoet.ksp.toTypeName
-import org.mabd.loggable.DELEGATE_NAME
-import org.mabd.loggable.doLog
+import loggable.DELEGATE_NAME
+import loggable.doLog
 
 
 internal class ClassPropertyGenerator(

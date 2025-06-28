@@ -1,4 +1,4 @@
-package org.mabd.copy
+package mimic_data_class.copyProcessor
 
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.Resolver
@@ -9,9 +9,9 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.validate
 import com.squareup.kotlinpoet.ksp.writeTo
-import org.mabd.copy.generators.ClassCopyFunGenerator
-import org.mabd.copy.generators.ExtensionFileGenerator
-import org.mabd.isDataClass
+import mimic_data_class.copyProcessor.generators.ClassCopyFunGenerator
+import mimic_data_class.copyProcessor.generators.ExtensionFileGenerator
+import common.isDataClass
 
 
 /**
