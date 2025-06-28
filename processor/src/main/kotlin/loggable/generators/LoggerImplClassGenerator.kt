@@ -2,6 +2,7 @@ package loggable.generators
 
 import com.google.devtools.ksp.getDeclaredFunctions
 import com.google.devtools.ksp.getDeclaredProperties
+import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
@@ -9,6 +10,7 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import loggable.DELEGATE_NAME
 import loggable.Loggable
@@ -29,11 +31,10 @@ internal class LoggerImplClassGenerator(
 
         val loggerClassName = ClassName(packageName, fileName)
         val interfaceClassName = ClassName(packageName, interfaceName)
-
-        if (typeParameters.isNotEmpty()) {
-           interfaceClassName.parameterizedBy(typeParameters)
-        }
-
+            .let {
+                if (typeParameters.isEmpty()) it
+                else it.parameterizedBy(typeParameters)
+            }
 
         val delegateProp = PropertySpec.builder(DELEGATE_NAME, interfaceClassName)
             .initializer(DELEGATE_NAME)
