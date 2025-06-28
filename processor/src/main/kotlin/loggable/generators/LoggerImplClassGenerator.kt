@@ -29,7 +29,11 @@ internal class LoggerImplClassGenerator(
 
         val loggerClassName = ClassName(packageName, fileName)
         val interfaceClassName = ClassName(packageName, interfaceName)
-            .parameterizedBy(typeParameters)
+
+        if (typeParameters.isNotEmpty()) {
+           interfaceClassName.parameterizedBy(typeParameters)
+        }
+
 
         val delegateProp = PropertySpec.builder(DELEGATE_NAME, interfaceClassName)
             .initializer(DELEGATE_NAME)
