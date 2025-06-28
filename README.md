@@ -14,14 +14,17 @@ This repository contains educational and production-style KSP processors created
 
 
 # Table Of Content:
-- [@Loggable](docs/Loggable-README.md)
-- [@Copy](docs/Mimic-Data-Class-README.md)
+- [@Loggable](#loggable)
+- [@Copy](#copy)
+- [@ToNiceString](#toNiceString)
 - [Learning Resources](#-learning-resources)
 - [Contribution](#-contributing--ideas)
 
 ***
 
 ## **@Loggable**
+Automatically generate a decorator implementation for any interface annotated with `@Loggable`.
+
 ```kotlin
 @Loggable // <- add this
 interface ApiService {
@@ -44,6 +47,9 @@ public class ApiService2LoggerImpl(
 view full `@Loggable` docs [here](docs/Loggable-README.md)
 
 ## **@Copy**
+
+Adds a copy extension function to any regular (non-data) class annotated with @Copy.
+
 ```kotlin
 @Copy // <- add this
 class Person(
@@ -59,6 +65,23 @@ fun Person.copy(
 ```
 view full `@Copy` docs [here](docs/Mimic-Data-Class-README.md#copy-processor)
 
+
+## **@ToNiceString**
+Adds a `toNiceString()` extension function to any regular (non-data) class annotated with `@ToNiceString`.
+
+```kotlin
+@ToNiceString // <- add this
+class Person(
+    val name: String,
+    val age: Int
+)
+
+// generated code
+fun Person.toNiceString(): String {
+    return "Person(name=$name, age=$age)"
+}
+```
+view full `@ToNiceString` docs [here](docs/Mimic-Data-Class-README.md#copy-processor)
 
 ***
 
