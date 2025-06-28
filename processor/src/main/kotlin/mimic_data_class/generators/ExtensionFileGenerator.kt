@@ -1,8 +1,8 @@
-package org.mabd.copy.generators
+package org.mabd.mimic_data_class.generators
 
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
-import org.mabd.createGeneratedAnnotation
+import org.mabd.common.createGeneratedAnnotation
 
 
 class ExtensionFileGenerator (

@@ -1,6 +1,6 @@
 package org.mabd
 
-import org.mabd.copy.Copy
+import org.mabd.mimic_data_class.Copy
 import org.mabd.loggable.Loggable
 import org.mabd.loggable.NoLog
 
@@ -66,7 +66,10 @@ fun main() {
     apiService.test5(1, .1f, .2f)
 
     val user = User(1, "someone")
+    val user2 = user.copy(age = 10)
+
     println(user.toNiceString())
+    println(user2.toNiceString())
 
 }
 

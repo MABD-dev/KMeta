@@ -1,4 +1,4 @@
-package org.mabd
+package org.mabd.common
 
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.Modifier

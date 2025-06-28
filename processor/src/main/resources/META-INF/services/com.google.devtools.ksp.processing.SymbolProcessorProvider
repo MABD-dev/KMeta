@@ -1,2 +1,2 @@
 org.mabd.loggable.LoggableProvider
-org.mabd.copy.CopyProvider
+org.mabd.mimic_data_class.CopyProvider
