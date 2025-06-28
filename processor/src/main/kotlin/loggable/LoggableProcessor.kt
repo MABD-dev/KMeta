@@ -30,11 +30,18 @@ class LoggableProcessor(
     private val env: SymbolProcessorEnvironment
 ): SymbolProcessor {
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        getLoggableAnnotationDeclarations(resolver)
-            .forEach {
-                val fileSpec = LoggerImplClassGenerator(it).generate()
-                fileSpec.writeTo(env.codeGenerator, Dependencies(false))
-            }
+        val declarations = getLoggableAnnotationDeclarations(resolver)
+        val privateInterfaces = declarations.filter { it.modifiers.contains(Modifier.PRIVATE) }
+
+        privateInterfaces.forEach { declaration ->
+            val interfaceName = declaration.qualifiedName?.asString() ?: declaration.simpleName.asString()
+            env.logger.error("$interfaceName interface cannot be private")
+        }
+
+        declarations.forEach {
+            val fileSpec = LoggerImplClassGenerator(it).generate()
+            fileSpec.writeTo(env.codeGenerator, Dependencies(false))
+        }
         return emptyList()
     }
 

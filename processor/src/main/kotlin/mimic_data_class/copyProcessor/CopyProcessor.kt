@@ -7,11 +7,13 @@ import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.Modifier
 import com.google.devtools.ksp.validate
 import com.squareup.kotlinpoet.ksp.writeTo
 import mimic_data_class.copyProcessor.generators.ClassCopyFunGenerator
 import mimic_data_class.common.ExtensionFileGenerator
 import common.isDataClass
+import kotlin.sequences.forEach
 
 
 /**
@@ -42,6 +44,13 @@ class CopyProcessor(
         val classDeclarations = getCopyAnnotationDeclarations(resolver)
         if (!classDeclarations.iterator().hasNext()) {
             return emptyList()
+        }
+
+        val privateInterfaces = classDeclarations.filter { it.modifiers.contains(Modifier.PRIVATE) }
+
+        privateInterfaces.forEach { declaration ->
+            val interfaceName = declaration.qualifiedName?.asString() ?: declaration.simpleName.asString()
+            env.logger.error("$interfaceName class cannot be private")
         }
 
         val functionsInfo = classDeclarations
