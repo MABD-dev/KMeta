@@ -1,28 +1,36 @@
-# Symbol Processors Playground
+
+<p align="center">
+    <img width="460" src="resources/logo.svg" />
+</p>
 
 
-A playground for building and sharing Kotlin Symbol Processor (KSP) annotation processors.
-This repository contains educational and production-style KSP processors created while learning and experimenting with symbol processing in Kotlin.
+<p align="center">
+  <b>Kotlin Metaprogramming & Code Generation Toolkit</b>
+</p>
 
----
-
-## ✨ Purpose
-
-- **Learn**: Deepen your understanding of KSP and Kotlin metaprogramming.
-- **Experiment**: Try out various code generation and analysis patterns.
-- **Share**: Help others by providing minimal, focused, real-world KSP use cases.
+<p align="center">
+  <a href="https://search.maven.org/search?q=g:dev.mabd.kmeta">
+    <img src="https://img.shields.io/maven-central/v/dev.mabd.kmeta/kmeta" alt="Maven Central">
+  </a>
+  <a href="https://search.maven.org/artifact/dev.mabd.kmeta/kmeta">
+    <img src="https://img.shields.io/badge/version-latest-blue.svg" alt="Latest Version">
+  </a>
+</p>
 
 
 # Table Of Content:
-- [@Loggable](#loggable)
-- [@Copy](#copy)
-- [@ToNiceString](#toNiceString)
+- [Annotations](#annotations)
+    - [@Loggable](#1-loggable)
+    - [@Copy](#2-copy)
+    - [@ToNiceString](#3-tonicestring)
 - [Learning Resources](#-learning-resources)
 - [Contribution](#-contributing--ideas)
 
 ***
 
-## **@Loggable**
+## Annotations
+
+### 1. **@Loggable**
 Automatically generate a decorator implementation for any interface annotated with `@Loggable`.
 
 ```kotlin
@@ -46,7 +54,7 @@ public class ApiService2LoggerImpl(
 ```
 view full `@Loggable` docs [here](docs/Loggable-README.md)
 
-## **@Copy**
+### 2. **@Copy**
 
 Adds a copy extension function to any regular (non-data) class annotated with @Copy.
 
@@ -66,7 +74,7 @@ fun Person.copy(
 view full `@Copy` docs [here](docs/Mimic-Data-Class-README.md#copy-processor)
 
 
-## **@ToNiceString**
+### 3. **@ToNiceString**
 Adds a `toNiceString()` extension function to any regular (non-data) class annotated with `@ToNiceString`.
 
 ```kotlin
