@@ -1,4 +1,4 @@
-package mimic_data_class.copyProcessor
+package mimicDataClass.copyProcessor
 
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.Resolver
@@ -10,11 +10,10 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.Modifier
 import com.google.devtools.ksp.validate
 import com.squareup.kotlinpoet.ksp.writeTo
-import mimic_data_class.copyProcessor.generators.ClassCopyFunGenerator
-import mimic_data_class.common.ExtensionFileGenerator
 import common.isDataClass
+import mimicDataClass.common.ExtensionFileGenerator
+import mimicDataClass.copyProcessor.generators.ClassCopyFunGenerator
 import kotlin.sequences.forEach
-
 
 /**
  * Generates a data-class-like `copy` extension function for this class.
@@ -37,9 +36,8 @@ annotation class Copy
 private const val GENERATED_FILE_NAME = "CopyExtension"
 
 class CopyProcessor(
-    private val env: SymbolProcessorEnvironment
-): SymbolProcessor {
-
+    private val env: SymbolProcessorEnvironment,
+) : SymbolProcessor {
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val classDeclarations = getCopyAnnotationDeclarations(resolver)
         if (!classDeclarations.iterator().hasNext()) {
@@ -53,17 +51,18 @@ class CopyProcessor(
             env.logger.error("$interfaceName class cannot be private")
         }
 
-        val functionsInfo = classDeclarations
-            .groupBy { declaration -> declaration.packageName.asString() }
-            .mapNotNull { (packageName, declarations) ->
-                val functions = declarations
-                    .mapNotNull { declaration ->
-                        ClassCopyFunGenerator(declaration).generate(env.logger)
-                    }
-                    .ifEmpty { return@mapNotNull null }
+        val functionsInfo =
+            classDeclarations
+                .groupBy { declaration -> declaration.packageName.asString() }
+                .mapNotNull { (packageName, declarations) ->
+                    val functions =
+                        declarations
+                            .mapNotNull { declaration ->
+                                ClassCopyFunGenerator(declaration).generate(env.logger)
+                            }.ifEmpty { return@mapNotNull null }
 
-                packageName to functions
-            }.toMap()
+                    packageName to functions
+                }.toMap()
 
         functionsInfo.map { (packageName, functions) ->
             val fileSpec = ExtensionFileGenerator(packageName, GENERATED_FILE_NAME, functions).generate()
@@ -73,13 +72,12 @@ class CopyProcessor(
         return emptyList()
     }
 
-    private fun getCopyAnnotationDeclarations(resolver: Resolver): Sequence<KSClassDeclaration> {
-        return resolver.getSymbolsWithAnnotation(Copy::class.java.name)
+    private fun getCopyAnnotationDeclarations(resolver: Resolver): Sequence<KSClassDeclaration> =
+        resolver
+            .getSymbolsWithAnnotation(Copy::class.java.name)
             .filterIsInstance<KSClassDeclaration>()
             .distinct()
             .filter { it.validate() }
             .filter { it.classKind == ClassKind.CLASS }
             .filter { !it.isDataClass() }
-    }
-
 }

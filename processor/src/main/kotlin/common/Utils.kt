@@ -7,9 +7,7 @@ import com.squareup.kotlinpoet.ClassName
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
-fun KSClassDeclaration.isDataClass(): Boolean {
-    return this.modifiers.contains(Modifier.DATA)
-}
+fun KSClassDeclaration.isDataClass(): Boolean = this.modifiers.contains(Modifier.DATA)
 
 fun createGeneratedAnnotation(): AnnotationSpec {
     val generatorName = "org.mabd"
@@ -18,7 +16,8 @@ fun createGeneratedAnnotation(): AnnotationSpec {
 
     val generatedClass = ClassName("javax.annotation.processing", "Generated")
 
-    return AnnotationSpec.builder(generatedClass)
+    return AnnotationSpec
+        .builder(generatedClass)
         .addMember("value = [%S]", generatorName)
         .addMember("date = %S", date)
         .addMember("comments = %S", comment)

@@ -1,4 +1,4 @@
-package mimic_data_class.copyProcessor.generators
+package mimicDataClass.copyProcessor.generators
 
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.symbol.KSClassDeclaration
@@ -9,19 +9,18 @@ import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
 import common.createGeneratedAnnotation
 
-
-class ClassCopyFunGenerator (
-    private val declaration: KSClassDeclaration
+class ClassCopyFunGenerator(
+    private val declaration: KSClassDeclaration,
 ) {
-
     fun generate(logger: KSPLogger): FunSpec? {
-        val constructorParameters = declaration
-            .primaryConstructor
-            ?.parameters
-            ?: run {
-                logger.warn("${declaration.qualifiedName?.asString()} has no primary constructor")
-                return null
-            }
+        val constructorParameters =
+            declaration
+                .primaryConstructor
+                ?.parameters
+                ?: run {
+                    logger.warn("${declaration.qualifiedName?.asString()} has no primary constructor")
+                    return null
+                }
 
         if (constructorParameters.isEmpty()) {
             logger.warn("${declaration.qualifiedName?.asString()} has no parameters in primary constructor")
@@ -29,18 +28,21 @@ class ClassCopyFunGenerator (
         }
 
         val className = declaration.toClassName()
-        val func = FunSpec.builder("copy")
-            .receiver(className)
-            .addAnnotation(createGeneratedAnnotation())
+        val func =
+            FunSpec
+                .builder("copy")
+                .receiver(className)
+                .addAnnotation(createGeneratedAnnotation())
 
         val parameterSpecs = constructorParameters.createParameterSpecs()
         func.addParameters(parameterSpecs)
 
-        val parametersNames = constructorParameters
-            .mapNotNull { it.name?.asString() }
-            .joinToString(", ")
+        val parametersNames =
+            constructorParameters
+                .mapNotNull { it.name?.asString() }
+                .joinToString(", ")
 
-        func.addStatement("return ${className}(${parametersNames})")
+        func.addStatement("return $className($parametersNames)")
         func.returns(declaration.toClassName())
 
         return func.build()
@@ -54,11 +56,10 @@ class ClassCopyFunGenerator (
             val builder = ParameterSpec.builder(name, type)
 
             if (param.isVar || param.isVal) {
-                builder.defaultValue("this.${name}")
+                builder.defaultValue("this.$name")
             }
 
             builder.build()
         }
     }
-
 }
