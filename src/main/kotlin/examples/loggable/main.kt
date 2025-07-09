@@ -3,17 +3,15 @@ package examples.loggable
 import loggable.Loggable
 import loggable.NoLog
 
-
 @Loggable(
-    tag = "MyLogTag"
+    tag = "MyLogTag",
 )
 interface ApiService<T> {
-
     var isAuth: Boolean?
 
     @Deprecated(
         message = "just for testing",
-        replaceWith = ReplaceWith("test2(1)")
+        replaceWith = ReplaceWith("test2(1)"),
     )
     fun testAnnotationsArePreserved()
 
@@ -27,11 +25,13 @@ interface ApiService<T> {
      */
     fun testDocsArePreserved(b: Int): Int
 
-    fun <T: Number, R> testGenericsArePossible()
+    fun <T : Number, R> testGenericsArePossible()
 
-    fun testVararg(a: Int, vararg f: Float)
+    fun testVararg(
+        a: Int,
+        vararg f: Float,
+    )
 }
-
 
 fun main() {
     val apiService = ApiServiceLoggerImpl(RealApiService())

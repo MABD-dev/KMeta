@@ -1,10 +1,18 @@
 package loggable
 
-import com.google.devtools.ksp.processing.*
-import com.google.devtools.ksp.symbol.*
+import com.google.devtools.ksp.processing.Dependencies
+import com.google.devtools.ksp.processing.Resolver
+import com.google.devtools.ksp.processing.SymbolProcessor
+import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
+import com.google.devtools.ksp.symbol.ClassKind
+import com.google.devtools.ksp.symbol.KSAnnotated
+import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.Modifier
 import com.google.devtools.ksp.validate
-import com.squareup.kotlinpoet.ksp.*
+import com.squareup.kotlinpoet.ksp.writeTo
 import loggable.generators.LoggerImplClassGenerator
+import kotlin.sequences.filter
+import kotlin.sequences.forEach
 
 /**
  * @param tag if [tag] is blank, generated class name will be used as a tag
@@ -15,20 +23,19 @@ annotation class Loggable(
     val tag: String = "",
 )
 
-
 /**
  * Mark function with this annotation to skip logging in that function
  */
 @Target(
     AnnotationTarget.FUNCTION,
-    AnnotationTarget.PROPERTY
+    AnnotationTarget.PROPERTY,
 )
 @Retention(AnnotationRetention.SOURCE)
 annotation class NoLog
 
 class LoggableProcessor(
-    private val env: SymbolProcessorEnvironment
-): SymbolProcessor {
+    private val env: SymbolProcessorEnvironment,
+) : SymbolProcessor {
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val declarations = getLoggableAnnotationDeclarations(resolver)
         val privateInterfaces = declarations.filter { it.modifiers.contains(Modifier.PRIVATE) }
@@ -45,12 +52,11 @@ class LoggableProcessor(
         return emptyList()
     }
 
-    private fun getLoggableAnnotationDeclarations(resolver: Resolver): Sequence<KSClassDeclaration> {
-        return resolver.getSymbolsWithAnnotation(Loggable::class.java.name)
+    private fun getLoggableAnnotationDeclarations(resolver: Resolver): Sequence<KSClassDeclaration> =
+        resolver
+            .getSymbolsWithAnnotation(Loggable::class.java.name)
             .filterIsInstance<KSClassDeclaration>()
             .distinct()
             .filter { it.validate() }
             .filter { it.classKind == ClassKind.INTERFACE }
-    }
-
 }
