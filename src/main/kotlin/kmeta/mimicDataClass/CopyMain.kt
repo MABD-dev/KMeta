@@ -1,8 +1,7 @@
-package examples.mimic_data_class
+package kmeta.mimicDataClass
 
-import mimic_data_class.copyProcessor.Copy
-import mimic_data_class.toStringProcessor.ToNiceString
-
+import mimicDataClass.copyProcessor.Copy
+import mimicDataClass.toStringProcessor.ToNiceString
 
 @Copy
 @ToNiceString

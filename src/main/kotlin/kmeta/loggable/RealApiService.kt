@@ -1,4 +1,4 @@
-package examples.loggable
+package kmeta.loggable
 
 //
 
